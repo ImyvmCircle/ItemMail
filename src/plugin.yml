@@ -1,0 +1,9 @@
+name: ItemMail
+version: 0.1
+main: com.imyvm.ItemMail
+depend: [Vault]
+
+commands:
+  itemmail:
+    description: All commands
+    aliases: [itemmail]
