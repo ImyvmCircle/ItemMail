@@ -6,4 +6,4 @@ depend: [Vault]
 commands:
   itemmail:
     description: All commands
-    aliases: [itemmail]
+    aliases: [itemmail, imail]
