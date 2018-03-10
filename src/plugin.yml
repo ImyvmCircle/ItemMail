@@ -7,3 +7,15 @@ commands:
   itemmail:
     description: All commands
     aliases: [itemmail, imail]
+
+permissions:
+  ItemMail.player.*:
+    children:
+      ItemMail.send.self: true
+      ItemMail.get: true
+      ItemMail.send.total: true
+      ItemMail.send.others: true
+  ItemMail.admin.*:
+    children:
+      ItemMail.open: true
+      ItemMail.create: true
