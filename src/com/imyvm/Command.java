@@ -36,24 +36,34 @@ public class Command implements CommandExecutor {
         }else if (args.length==1){
             String cmd = args[0];
             if (cmd.equalsIgnoreCase("send")){
-                if (sender.hasPermission("ItemMail.send.self")) {
+                if (sender.hasPermission("ItemMail.send.self") || sender.hasPermission("ItemMail.player.*")) {
                     sendsingle(player, player);
                 }else {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.null_mainhand));
                     return false;
                 }
-            }else if (cmd.equalsIgnoreCase("open") && player.hasPermission("ItemMail.open")) {
-                Inventory inv_s = SQLActions.loaddata(player);
-                player.openInventory(inv_s);
-            }else if (cmd.equalsIgnoreCase("create") && player.hasPermission("ItemMail.create")){
-                if (!SQLActions.playerDataContainsPlayer(player.getUniqueId())){
-                    SQLActions.createAccount(player);
-                    player.sendMessage("success");
+            }else if (cmd.equalsIgnoreCase("open")) {
+                if (player.hasPermission("ItemMail.open") || player.hasPermission("ItemMail.player.*")){
+                    Inventory inv_s = SQLActions.loaddata(player);
+                    player.openInventory(inv_s);
                 }else {
-                    player.sendMessage("exist!");
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.no_permission));
+                    return false;
+                }
+            }else if (cmd.equalsIgnoreCase("create")){
+                if ( player.hasPermission("ItemMail.create") || player.hasPermission("ItemMail.admin.*")){
+                    if (!SQLActions.playerDataContainsPlayer(player.getUniqueId())){
+                        SQLActions.createAccount(player);
+                        player.sendMessage("success");
+                    }else {
+                        player.sendMessage("exist!");
+                    }
+                }else {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.no_permission));
+                    return false;
                 }
             }else if (cmd.equalsIgnoreCase("get")){
-                if (player.hasPermission("ItemMail.get")){
+                if (player.hasPermission("ItemMail.get") || sender.hasPermission("ItemMail.player.*")){
                     Inventory playerinv = player.getInventory();
                     Inventory inventory = SQLActions.loaddata(player);
                     int inv_amount = inventory.getSize();
@@ -84,7 +94,7 @@ public class Command implements CommandExecutor {
                     return false;
                 }
             }else if (cmd.equalsIgnoreCase("sendtotal")){
-                if (player.hasPermission("ItemMail.send.total")){
+                if (player.hasPermission("ItemMail.send.total") || sender.hasPermission("ItemMail.player.*")){
                     return sendtoal(player);
                 }else {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.no_permission));
@@ -96,7 +106,7 @@ public class Command implements CommandExecutor {
             }
         }else if (args.length==2){
             if (args[0].equalsIgnoreCase("send")){
-                if (player.hasPermission("ItemMail.send.others")){
+                if (player.hasPermission("ItemMail.send.others") || sender.hasPermission("ItemMail.player.*")){
                     Player player1 = Bukkit.getPlayerExact(args[1]);
                     if (player1 == null){
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
@@ -109,7 +119,7 @@ public class Command implements CommandExecutor {
                     return false;
                 }
             }else if (args[0].equalsIgnoreCase("create")){
-                if (player.hasPermission("ItemMail.create")){
+                if (player.hasPermission("ItemMail.create") || player.hasPermission("ItemMail.admin.*")){
                     Player player1 = Bukkit.getPlayerExact(args[1]);
                     if (player1 == null){
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
@@ -128,7 +138,7 @@ public class Command implements CommandExecutor {
                     return false;
                 }
             }else if (args[0].equalsIgnoreCase("open")){
-                if (player.hasPermission("ItemMail.open.others")){
+                if (player.hasPermission("ItemMail.open.others") || player.hasPermission("ItemMail.admin.*")){
                     Player player1 = Bukkit.getPlayerExact(args[1]);
                     if (player1 == null){
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
@@ -152,9 +162,6 @@ public class Command implements CommandExecutor {
         return true;
     }
 
-//    private boolean fullinventory(Inventory inventory){
-//        return inventory.firstEmpty()==-1;
-//    }
 
     private static int getAmount(Inventory inventory) {
         int amount = 0;
