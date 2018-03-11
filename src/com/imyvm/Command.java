@@ -29,6 +29,9 @@ public class Command implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmdObj, String label, String[] args) {
+        if (!(sender instanceof Player)){
+            return false;
+        }
         Player player = (Player) sender;
         if (args.length==0){
             commandmessage(player);
