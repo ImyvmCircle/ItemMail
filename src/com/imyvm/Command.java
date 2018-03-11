@@ -23,7 +23,7 @@ public class Command implements CommandExecutor {
     private static double price = ItemMail.getPrice();
     private String null_mainhand = ItemMail.getMessage_null_mainhand();
     private String null_inventory = ItemMail.getMessage_null_inventory();
-    private String full_inv = ItemMail.getMessage_full();
+    //private String full_inv = ItemMail.getMessage_full();
     private String no_slots = ItemMail.getMessage_enough_slots();
     private String no_permission = ItemMail.getMessage_no_permission();
     private String null_inv = ItemMail.getMessage_null_inv();
@@ -152,9 +152,9 @@ public class Command implements CommandExecutor {
         return true;
     }
 
-    private boolean fullinventory(Inventory inventory){
-        return inventory.firstEmpty()==-1;
-    }
+//    private boolean fullinventory(Inventory inventory){
+//        return inventory.firstEmpty()==-1;
+//    }
 
     private static int getAmount(Inventory inventory) {
         int amount = 0;
