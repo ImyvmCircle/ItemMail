@@ -15,7 +15,7 @@ public class ItemMail extends JavaPlugin{
     public static Economy econ = null;
     private FileConfiguration config = getConfig();
     private String host, database, username, password, port;
-    private static String message_null_mainhand, message_null_inventory, message_enough_slots, message_full,
+    private static String message_null_mainhand, message_null_inventory, message_enough_slots,
             message_no_permission, message_null_inv;
     private Boolean useSSL, trustSSL;
     private static int slots;
@@ -50,7 +50,6 @@ public class ItemMail extends JavaPlugin{
         config.addDefault("message_null_mainhand","&b你手上没有物品，无法投递！");
         config.addDefault("message_null_inventory","&b你背包内没有物品，无法投递!");
         config.addDefault("message_enough_slots","&b你没有足够的空间，远程物品箱状态:&e");
-        config.addDefault("message_full","&b你的远程物品箱已满！");
         config.addDefault("message_null_inv","&b你的远程物品箱没有物品可提取！");
         config.addDefault("message_no_permission","You don't have the permission!");
 
@@ -71,7 +70,6 @@ public class ItemMail extends JavaPlugin{
         message_null_mainhand = config.getString("message_null_mainhand");
         message_null_inventory = config.getString("message_null_inventory");
         message_enough_slots = config.getString("message_enough_slots");
-        message_full = config.getString("message_full");
         message_no_permission = config.getString("message_no_permission");
         message_null_inv = config.getString("message_null_inv");
 
@@ -135,10 +133,6 @@ public class ItemMail extends JavaPlugin{
 
     public static String getMessage_enough_slots() {
         return message_enough_slots;
-    }
-
-    public static String getMessage_full() {
-        return message_full;
     }
 
     public static String getMessage_no_permission() {
