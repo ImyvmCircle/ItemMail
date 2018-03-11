@@ -54,7 +54,6 @@ public class Command implements CommandExecutor {
                 }
             }else if (cmd.equalsIgnoreCase("get")){
                 if (player.hasPermission("ItemMail.get")){
-                    player.updateInventory();
                     Inventory playerinv = player.getInventory();
                     Inventory inventory = SQLActions.loaddata(player);
                     int inv_amount = inventory.getSize();
@@ -69,7 +68,7 @@ public class Command implements CommandExecutor {
 
                     ItemStack[] items = inventory.getStorageContents();
 
-                    if (realAdd(midv, items) || ((playerinv.getSize()-getAmount(playerinv))>=getAmount(inventory))){
+                    if (realAdd(midv, items) || ((mid.length-getAmount(playerinv))>=getAmount(inventory))){
                         playerinv.addItem(items);
                         player.updateInventory();
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b提取成功"));
