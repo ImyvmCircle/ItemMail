@@ -63,7 +63,7 @@ public class Command implements CommandExecutor {
                     }
                     ItemStack[] mid = playerinv.getStorageContents();
 
-                    Inventory midv = Bukkit.createInventory(null, slots, player.getName());
+                    Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
                     midv.setStorageContents(mid);
 
                     ItemStack[] items = inventory.getStorageContents();
@@ -72,7 +72,7 @@ public class Command implements CommandExecutor {
                         playerinv.addItem(items);
                         player.updateInventory();
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b提取成功"));
-                        Inventory inv1 = Bukkit.createInventory(null, slots, player.getName());
+                        Inventory inv1 = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
                         SQLActions.uploaddata(player, inv1);
                     }else {
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',
@@ -199,7 +199,7 @@ public class Command implements CommandExecutor {
             Inventory inv_s = SQLActions.loaddata(player);
             ItemStack[] itemStack = player.getInventory().getStorageContents();
 
-            Inventory midv = Bukkit.createInventory(null, slots, player.getName());
+            Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
             midv.setStorageContents(inv_s.getStorageContents());
 
             if (empty(itemStack)) {
@@ -240,7 +240,7 @@ public class Command implements CommandExecutor {
             Inventory inv_s = SQLActions.loaddata(player);
             ItemStack itemStack = self.getInventory().getItemInMainHand();
 
-            Inventory midv = Bukkit.createInventory(null, slots, player.getName());
+            Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
             midv.setStorageContents(inv_s.getStorageContents());
 
             if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {

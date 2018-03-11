@@ -85,7 +85,7 @@ public class SQLActions {
             PreparedStatement econRegister = c.prepareStatement("INSERT INTO `" + table + "` (player, player_uuid, data) VALUES (?, ?, ?);");
             econRegister.setString(1, player.getName());
             econRegister.setString(2, player.getUniqueId().toString());
-            Inventory inv1 = Bukkit.createInventory(null, slots, player.getName());
+            Inventory inv1 = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
             String air = BukkitSerialization.toBase64(inv1);
             econRegister.setString(3, air);
             econRegister.executeUpdate();

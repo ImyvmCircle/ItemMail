@@ -88,6 +88,7 @@ public class ItemMail extends JavaPlugin{
         command = new Command(this);
         getCommand("itemmail").setExecutor(command);
         Bukkit.getServer().getPluginManager().registerEvents(new OnLogin(table, c), this);
+        Bukkit.getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 
 
         RegisteredServiceProvider<Economy> economyP = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
