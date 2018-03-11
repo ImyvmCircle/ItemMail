@@ -23,7 +23,6 @@ public class Command implements CommandExecutor {
     private static double price = ItemMail.getPrice();
     private String null_mainhand = ItemMail.getMessage_null_mainhand();
     private String null_inventory = ItemMail.getMessage_null_inventory();
-    //private String full_inv = ItemMail.getMessage_full();
     private String no_slots = ItemMail.getMessage_enough_slots();
     private String no_permission = ItemMail.getMessage_no_permission();
     private String null_inv = ItemMail.getMessage_null_inv();
@@ -32,7 +31,8 @@ public class Command implements CommandExecutor {
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmdObj, String label, String[] args) {
         Player player = (Player) sender;
         if (args.length==0){
-            player.sendMessage("-----ItemMail Help-------");
+            commandmessage(player);
+            return false;
         }else if (args.length==1){
             String cmd = args[0];
             if (cmd.equalsIgnoreCase("send")){
@@ -146,7 +146,7 @@ public class Command implements CommandExecutor {
                 return false;
             }
         }else {
-            player.sendMessage("-----ItemMail Help-------");
+            commandmessage(player);
             return false;
         }
         return true;
@@ -294,6 +294,20 @@ public class Command implements CommandExecutor {
         Map<Integer, ItemStack> leftover = inventory.addItem(itemStack);
 
         return leftover.isEmpty();
+    }
+
+    private void commandmessage(Player player){
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b-----ItemMail Help-------"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&e/itemmail send     - 传送手上的物品至远程物品箱"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&e/itemmail sendtotal     - 传送背包内的物品至远程物品箱"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&e/itemmail send [player]     - 传送物品至其他人"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&e/itemmail get     - 提取物品"));
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&e/itemmail open     - 查看远程物品箱"));
     }
 
 }
