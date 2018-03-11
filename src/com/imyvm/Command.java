@@ -54,6 +54,7 @@ public class Command implements CommandExecutor {
                 }
             }else if (cmd.equalsIgnoreCase("get")){
                 if (player.hasPermission("ItemMail.get")){
+                    player.updateInventory();
                     Inventory playerinv = player.getInventory();
                     Inventory inventory = SQLActions.loaddata(player);
                     int inv_amount = inventory.getSize();
@@ -68,7 +69,7 @@ public class Command implements CommandExecutor {
 
                     ItemStack[] items = inventory.getStorageContents();
 
-                    if (realAdd(midv, items)){
+                    if (realAdd(midv, items) || ((playerinv.getSize()-getAmount(playerinv))>=getAmount(inventory))){
                         playerinv.addItem(items);
                         player.updateInventory();
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b提取成功"));
@@ -208,7 +209,7 @@ public class Command implements CommandExecutor {
             }
             Double totalprice = price * getamount(player.getInventory());
             if (econ.has(player, totalprice)) {
-                if (realAdd(midv, itemStack)) {
+                if (realAdd(midv, itemStack) || (getAmount(player.getInventory())<=(inv_s.getSize()-getAmount(inv_s)))) {
                     inv_s.addItem(itemStack);
                     ItemStack[] stacks1 = new ItemStack[itemStack.length];
                     SQLActions.uploaddata(player, inv_s);
@@ -246,7 +247,7 @@ public class Command implements CommandExecutor {
             if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {
                 ItemStack midit = new ItemStack(itemStack);
                 if (econ.has(self, price * itemStack.getAmount())) {
-                    if (realadd(midv, midit)) {
+                    if (realadd(midv, midit) || (getAmount(player.getInventory())<=(inv_s.getSize()-getAmount(inv_s)))) {
                         inv_s.addItem(itemStack);
                         SQLActions.uploaddata(player, inv_s);
                         self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
