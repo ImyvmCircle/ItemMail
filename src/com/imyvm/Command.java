@@ -15,10 +15,10 @@ import java.util.*;
 
 public class Command implements CommandExecutor {
 
-//    ItemMail itemMail;
-//    public Command(ItemMail it){
-//        it = itemMail;
-//    }
+    ItemMail itemMail;
+    public Command(ItemMail it){
+        it = itemMail;
+    }
     private static int slots = ItemMail.getSlots();
     private static double price = ItemMail.getPrice();
     private String null_mainhand = ItemMail.getMessage_null_mainhand();
