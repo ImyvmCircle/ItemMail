@@ -128,7 +128,7 @@ public class Command implements CommandExecutor {
                     return false;
                 }
             }else if (args[0].equalsIgnoreCase("open")){
-                if (player.hasPermission("ItemMail.open")){
+                if (player.hasPermission("ItemMail.open.others")){
                     Player player1 = Bukkit.getPlayerExact(args[1]);
                     if (player1 == null){
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
