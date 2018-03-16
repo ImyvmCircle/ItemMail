@@ -109,7 +109,21 @@ public class SQLActions {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Bukkit.createInventory(null, InventoryType.CHEST , player.getName());
+        return Bukkit.createInventory(null, InventoryType.CHEST , "ItemMail for imyvm");
+    }
+
+    public static Inventory loaddata(String player){
+        try {
+            Statement sql = c.createStatement();
+            ResultSet resultSet = sql.executeQuery("SELECT * FROM `" + table + "` WHERE `player` = '" + player + "';");
+            if(resultSet.next()) {              // here
+                String inv_s = resultSet.getString("data");
+                return BukkitSerialization.fromBase64(inv_s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Bukkit.createInventory(null, InventoryType.CHEST , "ItemMail for imyvm");
     }
 
     public static boolean uploaddata(Player player, Inventory inventory){

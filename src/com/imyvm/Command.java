@@ -142,11 +142,20 @@ public class Command implements CommandExecutor {
                 }
             }else if (args[0].equalsIgnoreCase("open")){
                 if (player.hasPermission("ItemMail.open.others") || player.hasPermission("ItemMail.admin.*")){
+                    /*
                     Player player1 = Bukkit.getPlayerExact(args[1]);
                     if (player1 == null){
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
                     }else {
                         Inventory inv_s = SQLActions.loaddata(player1);
+                        player.openInventory(inv_s);
+                    }
+                    */
+                    if (!SQLActions.playerDataContainsPlayer(args[1])){
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                "&4该玩家不存在"));
+                    }else {
+                        Inventory inv_s = SQLActions.loaddata(args[1]);
                         player.openInventory(inv_s);
                     }
                 }else {
