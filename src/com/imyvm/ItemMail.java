@@ -7,6 +7,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 public class ItemMail extends JavaPlugin{
@@ -83,6 +85,32 @@ public class ItemMail extends JavaPlugin{
         }
 
         SQLActions.createTable();
+
+        /**
+         * @author Holeyness
+         * @description 防数据库连接丢失，每天查询一次数据库
+         */
+        Timer timer = new Timer();
+        //每6小时查询一次数据库时间
+        timer.schedule(new TimerTask() {
+            public void run() {
+                if(c != null){
+                    String sql = "select sysDate();";
+                    try {
+                        Statement statement = c.createStatement();
+                        ResultSet resultSet = statement.executeQuery(sql);
+                        if(resultSet.next()){
+                            System.out.println(resultSet.getDate("sysDate()"));
+                        }
+
+                        statement.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, 2000, 1000*3600*6);
+
         command = new Command(this);
         getCommand("itemmail").setExecutor(command);
         Bukkit.getServer().getPluginManager().registerEvents(new OnLogin(table, c), this);
