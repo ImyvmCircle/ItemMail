@@ -1,7 +1,7 @@
 # ItemMail
-a items share plugin for imyvm server, prepared for minecraft 1.13.
+A plugin of sharing items in imyvm server, prepared for minecraft 1.13.
 
-It is designed for the new minecraft server in imyvm minecraft circle.
+It is designed for the new minecraft server [future] in imyvm minecraft circle.
 ## Introduce:
 In the [future] imyvm server, you can send anything to the [MainWorld] which you acquired. 
 ## Commands for player
