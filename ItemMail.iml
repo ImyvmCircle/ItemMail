@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/OneDrive/文档/imyvm/plugins/spigot-api-1.12.2-R0.1-SNAPSHOT-shaded-b1420.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/mysql-connector-java-5.1.47.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,16 +19,18 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/OneDrive/文档/imyvm/plugins/Vault.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-latest.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-latest.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/OneDrive/文档/imyvm/plugins/com.mysql.jdbc_5.1.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/Vault.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

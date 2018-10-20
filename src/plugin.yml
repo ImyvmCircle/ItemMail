@@ -2,6 +2,7 @@ name: ItemMail
 version: 0.1
 main: com.imyvm.ItemMail
 depend: [Vault]
+api-version: 1.13
 
 commands:
   itemmail:
