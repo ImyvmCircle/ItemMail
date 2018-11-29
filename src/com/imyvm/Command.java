@@ -8,10 +8,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import static com.imyvm.ItemMail.econ;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.imyvm.ItemMail.econ;
 
 public class Command implements CommandExecutor {
 
@@ -26,6 +28,7 @@ public class Command implements CommandExecutor {
     private String no_slots = ItemMail.getMessage_enough_slots();
     private String no_permission = ItemMail.getMessage_no_permission();
     private String null_inv = ItemMail.getMessage_null_inv();
+    private String moneyuuid = ItemMail.getMoneyuuid();
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmdObj, String label, String[] args) {
@@ -234,6 +237,7 @@ public class Command implements CommandExecutor {
                     player.getInventory().setStorageContents(stacks1);
                     player.updateInventory();
                     econ.withdrawPlayer(player, totalprice);
+                    econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), totalprice);
                     //等待给某op
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                             "&b投递成功，花费 &6" + df.format(totalprice) + "&6D"));
@@ -271,6 +275,7 @@ public class Command implements CommandExecutor {
                         self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                         self.updateInventory();
                         econ.withdrawPlayer(self, price * itemStack.getAmount());
+                        econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price * itemStack.getAmount());
                         self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 "&b投递成功，花费 &6" +
                                         df.format(price * itemStack.getAmount()) + "&6D"));

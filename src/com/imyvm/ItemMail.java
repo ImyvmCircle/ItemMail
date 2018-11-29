@@ -6,7 +6,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -18,7 +21,7 @@ public class ItemMail extends JavaPlugin{
     private FileConfiguration config = getConfig();
     private String host, database, username, password, port;
     private static String message_null_mainhand, message_null_inventory, message_enough_slots,
-            message_no_permission, message_null_inv;
+            message_no_permission, message_null_inv, moneyuuid;
     private Boolean useSSL, trustSSL;
     private static int slots;
     private static double price;
@@ -48,6 +51,7 @@ public class ItemMail extends JavaPlugin{
         config.addDefault("trustSSL", false);
         config.addDefault("slots",36);
         config.addDefault("price",2.33);
+        config.addDefault("moneyuuid", "a641c611-21ef-4b71-b327-e45ef8fdf647");
 
         config.addDefault("message_null_mainhand","&b你手上没有物品，无法投递！");
         config.addDefault("message_null_inventory","&b你背包内没有物品，无法投递!");
@@ -68,6 +72,7 @@ public class ItemMail extends JavaPlugin{
         trustSSL = config.getBoolean("trustSSL");
         slots = config.getInt("slots");
         price = config.getDouble("price");
+        moneyuuid = config.getString("moneyuuid");
 
         message_null_mainhand = config.getString("message_null_mainhand");
         message_null_inventory = config.getString("message_null_inventory");
@@ -169,6 +174,10 @@ public class ItemMail extends JavaPlugin{
 
     public static String getMessage_null_inv() {
         return message_null_inv;
+    }
+
+    public static String getMoneyuuid() {
+        return moneyuuid;
     }
 
 }
