@@ -21,7 +21,7 @@ public class ItemMail extends JavaPlugin{
     private FileConfiguration config = getConfig();
     private String host, database, username, password, port;
     private static String message_null_mainhand, message_null_inventory, message_enough_slots,
-            message_no_permission, message_null_inv, moneyuuid;
+            message_no_permission, message_null_inv, message_received, moneyuuid;
     private Boolean useSSL, trustSSL;
     private static int slots;
     private static double price;
@@ -58,6 +58,7 @@ public class ItemMail extends JavaPlugin{
         config.addDefault("message_enough_slots","&b你没有足够的空间，远程物品箱状态:&e");
         config.addDefault("message_null_inv","&b你的远程物品箱没有物品可提取！");
         config.addDefault("message_no_permission","You don't have the permission!");
+        config.addDefault("message_received", "&d你有来自 {player} 的包裹！");
 
         config.options().copyDefaults(true);
         saveConfig();
@@ -79,6 +80,7 @@ public class ItemMail extends JavaPlugin{
         message_enough_slots = config.getString("message_enough_slots");
         message_no_permission = config.getString("message_no_permission");
         message_null_inv = config.getString("message_null_inv");
+        message_received = config.getString("message_received");
 
         MySQL = new MySQL(host, port, database, username, password, useSSL, trustSSL);
         try {
@@ -178,6 +180,10 @@ public class ItemMail extends JavaPlugin{
 
     public static String getMoneyuuid() {
         return moneyuuid;
+    }
+
+    public static String getMessage_received() {
+        return message_received;
     }
 
 }

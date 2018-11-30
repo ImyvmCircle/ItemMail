@@ -29,6 +29,7 @@ public class Command implements CommandExecutor {
     private String no_permission = ItemMail.getMessage_no_permission();
     private String null_inv = ItemMail.getMessage_null_inv();
     private String moneyuuid = ItemMail.getMoneyuuid();
+    private String message_received = ItemMail.getMessage_received();
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmdObj, String label, String[] args) {
@@ -118,7 +119,13 @@ public class Command implements CommandExecutor {
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
                         return false;
                     }else {
-                        return sendsingle(player1, player);
+                        if (sendsingle(player1, player)) {
+                            player1.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                    message_received.replace("{player}", player.getDisplayName())));
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
                 }else {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.no_permission));
