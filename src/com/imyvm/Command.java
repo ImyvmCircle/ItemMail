@@ -3,14 +3,18 @@ package com.imyvm;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.imyvm.ItemMail.econ;
@@ -207,6 +211,24 @@ public class Command implements CommandExecutor {
         return amount;
     }
 
+    private static int getrealamount(ItemStack itemStack) {
+        int amount_Box = 0;
+        if (itemStack.getItemMeta() instanceof BlockStateMeta) {
+            BlockStateMeta im = (BlockStateMeta) itemStack.getItemMeta();
+            if (im.getBlockState() instanceof ShulkerBox) {
+                ShulkerBox shulkerBox = (ShulkerBox) im.getBlockState();
+                amount_Box = getamount(shulkerBox.getInventory());
+            }
+        }
+        return amount_Box;
+    }
+
+    private static int getrealamount(ItemStack[] itemStacks) {
+        int total_amount;
+        total_amount = Arrays.stream(itemStacks).filter(Objects::nonNull).mapToInt(Command::getrealamount).sum();
+        return total_amount;
+    }
+
     private boolean empty(Inventory inventory){
         for(ItemStack it : inventory.getContents())
         {
@@ -235,7 +257,7 @@ public class Command implements CommandExecutor {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.null_inventory));
                 return false;
             }
-            Double totalprice = price * getamount(player.getInventory());
+            double totalprice = price * (getamount(player.getInventory()) + getrealamount(itemStack));
             if (econ.has(player, totalprice)) {
                 if (realAdd(midv, itemStack) || (getAmount(player.getInventory())<=(inv_s.getSize()-getAmount(inv_s)))) {
                     inv_s.addItem(itemStack);
@@ -245,7 +267,6 @@ public class Command implements CommandExecutor {
                     player.updateInventory();
                     econ.withdrawPlayer(player, totalprice);
                     econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), totalprice);
-                    //等待给某op
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                             "&b投递成功，花费 &6" + df.format(totalprice) + "&6D"));
                 } else {
@@ -274,18 +295,20 @@ public class Command implements CommandExecutor {
             midv.setStorageContents(inv_s.getStorageContents());
 
             if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {
+                int amount_Box = getrealamount(itemStack);
                 ItemStack midit = new ItemStack(itemStack);
-                if (econ.has(self, price * itemStack.getAmount())) {
+                double tprice = price * (itemStack.getAmount() + amount_Box);
+                if (econ.has(self, tprice)) {
                     if (realadd(midv, midit) || (getAmount(player.getInventory())<=(inv_s.getSize()-getAmount(inv_s)))) {
                         inv_s.addItem(itemStack);
                         SQLActions.uploaddata(player, inv_s);
                         self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                         self.updateInventory();
-                        econ.withdrawPlayer(self, price * itemStack.getAmount());
-                        econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price * itemStack.getAmount());
+                        econ.withdrawPlayer(self, tprice);
+                        econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), tprice);
                         self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 "&b投递成功，花费 &6" +
-                                        df.format(price * itemStack.getAmount()) + "&6D"));
+                                        df.format(tprice) + "&6D"));
                     } else {
                         self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 this.no_slots+getAmount(inv_s)+"/"+inv_s.getSize()));
