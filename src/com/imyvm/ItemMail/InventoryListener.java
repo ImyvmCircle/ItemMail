@@ -1,4 +1,4 @@
-package com.imyvm;
+package com.imyvm.ItemMail;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

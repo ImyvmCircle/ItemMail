@@ -1,4 +1,4 @@
-package com.imyvm;
+package com.imyvm.ItemMail;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

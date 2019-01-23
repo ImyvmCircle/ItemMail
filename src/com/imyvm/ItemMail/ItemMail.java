@@ -1,4 +1,4 @@
-package com.imyvm;
+package com.imyvm.ItemMail;
 
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;

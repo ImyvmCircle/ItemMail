@@ -1,4 +1,4 @@
-package com.imyvm;
+package com.imyvm.ItemMail;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.imyvm.ItemMail.econ;
+import static com.imyvm.ItemMail.ItemMail.econ;
 
 public class Command implements CommandExecutor {
 
