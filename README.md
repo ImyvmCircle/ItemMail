@@ -9,6 +9,7 @@ In the [future] imyvm server, you can send anything to the [MainWorld] which you
 * /itemmail get            - Get the items from your mailbox, the mailbox size is suggested as 36.
 * /itemmail sendtotal      - Send all items in your inventory to yourself.
 * /itemmail open     - open your mailbox
+* /itemmail confirm   - confirm send items
 ## Commands for ops
 * /itemmail open [player]  - Open the player's mailbox, but you can't change it since now.
 * /itemmail create [player] - Create mailbox for player, which is not suggested to use, since the account will create automatically when player login in the server firstly.
@@ -18,6 +19,7 @@ In the [future] imyvm server, you can send anything to the [MainWorld] which you
   - ItemMail.get
   - ItemMail.send.total
   - ItemMail.send.others
+  - ItemMail.send.confirm
   - ItemMail.open
 * ItemMail.admin.*
   - ItemMail.open.others
