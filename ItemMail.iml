@@ -19,21 +19,30 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-latest.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/Vault.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-latest.jar!/" />
-        </SOURCES>
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/Vault.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/Rewards.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-1.13.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-1.13.2.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>

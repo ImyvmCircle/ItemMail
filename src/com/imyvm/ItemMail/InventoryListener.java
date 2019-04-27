@@ -21,7 +21,7 @@ public class InventoryListener implements Listener {
             return;
         }
         Player p = (Player) event.getWhoClicked();
-        if (event.getInventory().getTitle().equalsIgnoreCase("ItemMail for imyvm")) {
+        if (event.getView().getTitle().equalsIgnoreCase("ItemMail for imyvm")) {
             event.setCancelled(true);
             p.updateInventory();
             if (event.getRawSlot() == 0) {

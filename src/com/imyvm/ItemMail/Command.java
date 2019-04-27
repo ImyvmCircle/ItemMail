@@ -1,5 +1,6 @@
 package com.imyvm.ItemMail;
 
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,10 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static com.imyvm.ItemMail.ItemMail.econ;
 
@@ -34,6 +32,7 @@ public class Command implements CommandExecutor {
     private String null_inv = ItemMail.getMessage_null_inv();
     private String moneyuuid = ItemMail.getMoneyuuid();
     private String message_received = ItemMail.getMessage_received();
+    private PassiveExpiringMap<Player, List> map = new PassiveExpiringMap<>(30000);
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmdObj, String label, String[] args) {
@@ -111,7 +110,28 @@ public class Command implements CommandExecutor {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.no_permission));
                     return false;
                 }
-            }else {
+            } else if (cmd.equalsIgnoreCase("confirm")) {
+                if (!player.hasPermission("ItemMail.send.confirm")) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.no_permission));
+                    return false;
+                }
+                if (!map.containsKey(player)) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                            "&c你没有待确认的投递单！"));
+                    return false;
+                }
+                List list = map.get(player);
+                Player receiver = (Player) list.get(0);
+                Double price = (Double) list.get(2);
+                if (list.get(1) instanceof ItemStack) {
+                    ItemStack itemStack = (ItemStack) list.get(1);
+                    return process(itemStack, player, receiver, price);
+                } else {
+                    ItemStack[] itemStack = (ItemStack[]) list.get(1);
+                    return process(itemStack, player, receiver, price);
+                }
+
+            } else {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&cinvalid &ccommand"));
                 return false;
             }
@@ -247,37 +267,26 @@ public class Command implements CommandExecutor {
     private boolean sendtoal(Player player) {
         DecimalFormat df = new DecimalFormat("0.00 ");
         if (SQLActions.playerDataContainsPlayer(player.getUniqueId())) {
-            Inventory inv_s = SQLActions.loaddata(player);
-            ItemStack[] itemStack = player.getInventory().getStorageContents();
 
-            Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
-            midv.setStorageContents(inv_s.getStorageContents());
+            // Items: itemStack
+            ItemStack[] itemStack = player.getInventory().getStorageContents();
 
             if (empty(itemStack)) {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', this.null_inventory));
                 return false;
             }
-            double totalprice = price * (getamount(player.getInventory()) + getrealamount(itemStack));
-            if (econ.has(player, totalprice)) {
-                if (realAdd(midv, itemStack) || (getAmount(player.getInventory())<=(inv_s.getSize()-getAmount(inv_s)))) {
-                    inv_s.addItem(itemStack);
-                    ItemStack[] stacks1 = new ItemStack[itemStack.length];
-                    SQLActions.uploaddata(player, inv_s);
-                    player.getInventory().setStorageContents(stacks1);
-                    player.updateInventory();
-                    econ.withdrawPlayer(player, totalprice);
-                    econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), totalprice);
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&b投递成功，花费 &6" + df.format(totalprice) + "&6D"));
-                } else {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            this.no_slots+getAmount(inv_s)+"/"+inv_s.getSize()));
-                    return false;
-                }
-            } else {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b你没有足够的钱！"));
-                return false;
-            }
+
+            // Price: totalprice
+            double totalprice = getTotalPrice(getamount(player.getInventory()) + getrealamount(itemStack));
+
+            List<Object> list = new ArrayList<>();
+            list.add(player);
+            list.add(itemStack);
+            list.add(totalprice);
+            map.put(player, list);
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&c本次投递需花费" + df.format(totalprice) + "&bD&c,请在30秒内输入/imail confirm 确认投递"));
+
         } else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4No exist!"));
             return false;
@@ -288,39 +297,26 @@ public class Command implements CommandExecutor {
     private boolean sendsingle(Player player, Player self) {
         DecimalFormat df = new DecimalFormat("0.00 ");
         if (SQLActions.playerDataContainsPlayer(player.getUniqueId())) {
-            Inventory inv_s = SQLActions.loaddata(player);
+
+            // Items
             ItemStack itemStack = self.getInventory().getItemInMainHand();
-
-            Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
-            midv.setStorageContents(inv_s.getStorageContents());
-
-            if (itemStack != null && !itemStack.getType().equals(Material.AIR)) {
-                int amount_Box = getrealamount(itemStack);
-                ItemStack midit = new ItemStack(itemStack);
-                double tprice = price * (itemStack.getAmount() + amount_Box);
-                if (econ.has(self, tprice)) {
-                    if (realadd(midv, midit) || (getAmount(player.getInventory())<=(inv_s.getSize()-getAmount(inv_s)))) {
-                        inv_s.addItem(itemStack);
-                        SQLActions.uploaddata(player, inv_s);
-                        self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                        self.updateInventory();
-                        econ.withdrawPlayer(self, tprice);
-                        econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), tprice);
-                        self.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                "&b投递成功，花费 &6" +
-                                        df.format(tprice) + "&6D"));
-                    } else {
-                        self.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                this.no_slots+getAmount(inv_s)+"/"+inv_s.getSize()));
-                    }
-                } else {
-                    self.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&4你没有足够的钱！"));
-                }
-            } else {
+            if (itemStack.getType().equals(Material.AIR)) {
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&', this.null_mainhand));
                 return false;
             }
+
+            // Price
+            int amount_Box = getrealamount(itemStack);
+            ItemStack midit = new ItemStack(itemStack);
+            double tprice = getTotalPrice(itemStack.getAmount() + amount_Box);
+
+            List<Object> list = new ArrayList<>();
+            list.add(player);
+            list.add(itemStack);
+            list.add(tprice);
+            map.put(self, list);
+            self.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&c本次投递需花费" + df.format(tprice) + "&bD&c,请在30秒内输入/imail confirm 确认投递"));
         } else {
             self.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4No exist this player!"));
             return false;
@@ -362,6 +358,83 @@ public class Command implements CommandExecutor {
                 "&e/itemmail get     - 提取物品"));
         player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                 "&e/itemmail open     - 查看远程物品箱"));
+    }
+
+    private boolean process(ItemStack[] itemStack, Player self, Player player, Double price) {
+
+        DecimalFormat df = new DecimalFormat("0.00 ");
+
+        // Remote Inventory: midv
+        Inventory inv_s = SQLActions.loaddata(player);
+        Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
+        midv.setStorageContents(inv_s.getStorageContents());
+
+        // Process
+        if (econ.has(self, price)) {
+            if (realAdd(midv, itemStack) || (getAmount(self.getInventory()) <= (inv_s.getSize() - getAmount(inv_s)))) {
+                inv_s.addItem(itemStack);
+                SQLActions.uploaddata(player, inv_s);
+                ItemStack[] stacks1 = new ItemStack[itemStack.length];
+                self.getInventory().setStorageContents(stacks1);
+                self.updateInventory();
+                econ.withdrawPlayer(self, price);
+                econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
+                self.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&b投递成功，花费 &6" + df.format(price) + "&6D"));
+            } else {
+                self.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        this.no_slots + getAmount(inv_s) + "/" + inv_s.getSize()));
+                return false;
+            }
+        } else {
+            self.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b你没有足够的钱！"));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean process(ItemStack itemStack, Player self, Player player, Double price) {
+
+        DecimalFormat df = new DecimalFormat("0.00 ");
+
+        // Remote Inventory: midv
+        Inventory inv_s = SQLActions.loaddata(player);
+        Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
+        midv.setStorageContents(inv_s.getStorageContents());
+
+        // Process
+        if (econ.has(self, price)) {
+            if (realadd(midv, itemStack) || (getAmount(player.getInventory()) <= (inv_s.getSize() - getAmount(inv_s)))) {
+                inv_s.addItem(itemStack);
+                SQLActions.uploaddata(player, inv_s);
+                self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                self.updateInventory();
+                econ.withdrawPlayer(self, price);
+                econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
+                self.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&b投递成功，花费 &6" +
+                                df.format(price) + "&6D"));
+            } else {
+                self.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        this.no_slots + getAmount(inv_s) + "/" + inv_s.getSize()));
+                return false;
+            }
+        } else {
+            self.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                    "&4你没有足够的钱！"));
+            return false;
+        }
+        return true;
+    }
+
+    private double getTotalPrice(int num) {
+        if (num <= 648) {
+            return price * num;
+        } else if (num <= 2304) {
+            return price * 648 + price * 0.5 * (num - 648);
+        } else {
+            return price * 648 + price * 0.5 * 1656 + price * 0.05 * (num - 2304);
+        }
     }
 
 }

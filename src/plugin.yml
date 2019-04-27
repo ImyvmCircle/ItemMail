@@ -1,7 +1,7 @@
 name: ItemMail
 version: 0.1
 main: com.imyvm.ItemMail.ItemMail
-depend: [Vault]
+depend: [Vault, Rewards]
 api-version: 1.13
 
 commands:
@@ -16,6 +16,7 @@ permissions:
       ItemMail.get: true
       ItemMail.send.total: true
       ItemMail.send.others: true
+      ItemMail.send.confirm: true
       ItemMial.open: true
   ItemMail.admin.*:
     children:
