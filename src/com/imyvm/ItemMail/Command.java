@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static com.imyvm.ItemMail.ItemMail.econ;
 
@@ -378,7 +379,9 @@ public class Command implements CommandExecutor {
                 self.getInventory().setStorageContents(stacks1);
                 self.updateInventory();
                 econ.withdrawPlayer(self, price);
-                econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
+                CompletableFuture.runAsync(() -> {
+                    econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
+                });
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&b投递成功，花费 &6" + df.format(price) + "&6D"));
             } else {
@@ -410,7 +413,9 @@ public class Command implements CommandExecutor {
                 self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                 self.updateInventory();
                 econ.withdrawPlayer(self, price);
-                econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
+                CompletableFuture.runAsync(() -> {
+                    econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
+                });
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&b投递成功，花费 &6" +
                                 df.format(price) + "&6D"));

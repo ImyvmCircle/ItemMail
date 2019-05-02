@@ -37,11 +37,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-1.13.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-1.14.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-1.13.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../imyvm/plugins/10-17-2018/spigot-1.14.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
