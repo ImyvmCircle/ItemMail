@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class InventoryListener implements Listener {
 
     ItemMail itemMail;
+    private static int slots = ItemMail.getSlots();
 
     public InventoryListener(ItemMail it){
         it = itemMail;
@@ -21,6 +22,9 @@ public class InventoryListener implements Listener {
             return;
         }
         Player p = (Player) event.getWhoClicked();
+        if (event.getView().getTopInventory().getSize() != slots) {
+            return;
+        }
         if (event.getView().getTitle().equalsIgnoreCase("ItemMail for imyvm")) {
             event.setCancelled(true);
             p.updateInventory();

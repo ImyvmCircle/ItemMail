@@ -14,7 +14,6 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 import static com.imyvm.ItemMail.ItemMail.econ;
 
@@ -87,10 +86,18 @@ public class Command implements CommandExecutor {
                     Inventory midv = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
                     midv.setStorageContents(mid);
 
-                    ItemStack[] items = inventory.getStorageContents();
+                    Inventory remote_midv = Bukkit.createInventory(null, slots, "Stored");
+                    remote_midv.setStorageContents(inventory.getStorageContents());
 
-                    if (realAdd(midv, items) || ((mid.length-getAmount(playerinv))>=getAmount(inventory))){
-                        playerinv.addItem(items);
+                    ItemStack[] items_test = remote_midv.getStorageContents();
+
+                    if (realAdd(midv, items_test) || ((mid.length - getAmount(playerinv)) >= getAmount(inventory))) {
+                        ItemStack[] items = inventory.getStorageContents();
+                        for (ItemStack itemStack : items) {
+                            if (itemStack != null) {
+                                playerinv.addItem(itemStack);
+                            }
+                        }
                         player.updateInventory();
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&b提取成功"));
                         Inventory inv1 = Bukkit.createInventory(null, slots, "ItemMail for imyvm");
@@ -144,13 +151,7 @@ public class Command implements CommandExecutor {
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',"&e该玩家不存在或不在线！"));
                         return false;
                     }else {
-                        if (sendsingle(player1, player)) {
-                            player1.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                    message_received.replace("{player}", player.getDisplayName())));
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return sendsingle(player1, player);
                     }
                 }else {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&',this.no_permission));
@@ -286,7 +287,7 @@ public class Command implements CommandExecutor {
             list.add(totalprice);
             map.put(player, list);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    "&c本次投递需花费" + df.format(totalprice) + "&bD&c,请在30秒内输入/imail confirm 确认投递"));
+                    "&c本次投递需花费" + df.format(totalprice) + "&eD&c,请在30秒内输入&f/imail confirm&c 确认投递"));
 
         } else {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4No exist!"));
@@ -317,7 +318,7 @@ public class Command implements CommandExecutor {
             list.add(tprice);
             map.put(self, list);
             self.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    "&c本次投递需花费" + df.format(tprice) + "&bD&c,请在30秒内输入/imail confirm 确认投递"));
+                    "&c本次投递需花费" + df.format(tprice) + "&eD&c,请在30秒内输入&f/imail confirm&c 确认投递"));
         } else {
             self.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4No exist this player!"));
             return false;
@@ -327,15 +328,13 @@ public class Command implements CommandExecutor {
 
 
     private boolean realAdd(Inventory inventory, ItemStack[] itemStacks){
-
-        for (int i = 0; i < itemStacks.length; i++) {
-            ItemStack it = itemStacks[i];
-            if (it == null){
-                itemStacks[i] = new ItemStack(Material.AIR);
+        Map<Integer, ItemStack> leftover = new HashMap<>();
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack != null) {
+                leftover = inventory.addItem(itemStack);
             }
         }
 
-        Map<Integer, ItemStack> leftover = inventory.addItem(itemStacks);
         return leftover.isEmpty();
     }
 
@@ -379,11 +378,13 @@ public class Command implements CommandExecutor {
                 self.getInventory().setStorageContents(stacks1);
                 self.updateInventory();
                 econ.withdrawPlayer(self, price);
-                CompletableFuture.runAsync(() -> {
-                    econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
-                });
+                econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&b投递成功，花费 &6" + df.format(price) + "&6D"));
+                if (!self.equals(player)) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                            message_received.replace("{player}", self.getDisplayName())));
+                }
             } else {
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         this.no_slots + getAmount(inv_s) + "/" + inv_s.getSize()));
@@ -413,12 +414,14 @@ public class Command implements CommandExecutor {
                 self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                 self.updateInventory();
                 econ.withdrawPlayer(self, price);
-                CompletableFuture.runAsync(() -> {
-                    econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
-                });
+                econ.depositPlayer(Bukkit.getOfflinePlayer(UUID.fromString(moneyuuid)), price);
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&b投递成功，花费 &6" +
                                 df.format(price) + "&6D"));
+                if (!self.equals(player)) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                            message_received.replace("{player}", self.getDisplayName())));
+                }
             } else {
                 self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         this.no_slots + getAmount(inv_s) + "/" + inv_s.getSize()));
