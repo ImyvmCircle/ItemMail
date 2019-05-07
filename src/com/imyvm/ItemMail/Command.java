@@ -133,10 +133,12 @@ public class Command implements CommandExecutor {
                 Double price = (Double) list.get(2);
                 if (list.get(1) instanceof ItemStack) {
                     ItemStack itemStack = (ItemStack) list.get(1);
-                    return process(itemStack, player, receiver, price);
+                    ItemStack itemStack_test = (ItemStack) list.get(3);
+                    return process(itemStack, itemStack_test, player, receiver, price);
                 } else {
                     ItemStack[] itemStack = (ItemStack[]) list.get(1);
-                    return process(itemStack, player, receiver, price);
+                    ItemStack[] itemStack_test = (ItemStack[]) list.get(3);
+                    return process(itemStack, itemStack_test, player, receiver, price);
                 }
 
             } else {
@@ -281,10 +283,15 @@ public class Command implements CommandExecutor {
             // Price: totalprice
             double totalprice = getTotalPrice(getamount(player.getInventory()) + getrealamount(itemStack));
 
+            Inventory mid_inv = Bukkit.createInventory(null, 36, "mid_inv");
+            mid_inv.setStorageContents(player.getInventory().getStorageContents());
+            ItemStack[] itemStack_test = mid_inv.getStorageContents();
+
             List<Object> list = new ArrayList<>();
             list.add(player);
             list.add(itemStack);
             list.add(totalprice);
+            list.add(itemStack_test);
             map.put(player, list);
             player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     "&c本次投递需花费" + df.format(totalprice) + "&eD&c,请在30秒内输入&f/imail confirm&c 确认投递"));
@@ -312,10 +319,15 @@ public class Command implements CommandExecutor {
             ItemStack midit = new ItemStack(itemStack);
             double tprice = getTotalPrice(itemStack.getAmount() + amount_Box);
 
+            Inventory mid_inv = Bukkit.createInventory(null, 9, "mid_inv");
+            mid_inv.setItem(0, self.getInventory().getItemInMainHand());
+            ItemStack itemStack_test = mid_inv.getItem(0);
+
             List<Object> list = new ArrayList<>();
             list.add(player);
             list.add(itemStack);
             list.add(tprice);
+            list.add(itemStack_test);
             map.put(self, list);
             self.sendMessage(ChatColor.translateAlternateColorCodes('&',
                     "&c本次投递需花费" + df.format(tprice) + "&eD&c,请在30秒内输入&f/imail confirm&c 确认投递"));
@@ -360,7 +372,7 @@ public class Command implements CommandExecutor {
                 "&e/itemmail open     - 查看远程物品箱"));
     }
 
-    private boolean process(ItemStack[] itemStack, Player self, Player player, Double price) {
+    private boolean process(ItemStack[] itemStack, ItemStack[] itemStacks_test, Player self, Player player, Double price) {
 
         DecimalFormat df = new DecimalFormat("0.00 ");
 
@@ -371,8 +383,12 @@ public class Command implements CommandExecutor {
 
         // Process
         if (econ.has(self, price)) {
-            if (realAdd(midv, itemStack) || (getAmount(self.getInventory()) <= (inv_s.getSize() - getAmount(inv_s)))) {
-                inv_s.addItem(itemStack);
+            if (realAdd(midv, itemStacks_test) || (getAmount(self.getInventory()) <= (inv_s.getSize() - getAmount(inv_s)))) {
+                for (ItemStack item : itemStack) {
+                    if (item != null) {
+                        inv_s.addItem(item);
+                    }
+                }
                 SQLActions.uploaddata(player, inv_s);
                 ItemStack[] stacks1 = new ItemStack[itemStack.length];
                 self.getInventory().setStorageContents(stacks1);
@@ -397,7 +413,7 @@ public class Command implements CommandExecutor {
         return true;
     }
 
-    private boolean process(ItemStack itemStack, Player self, Player player, Double price) {
+    private boolean process(ItemStack itemStack, ItemStack itemStack_test, Player self, Player player, Double price) {
 
         DecimalFormat df = new DecimalFormat("0.00 ");
 
@@ -408,7 +424,7 @@ public class Command implements CommandExecutor {
 
         // Process
         if (econ.has(self, price)) {
-            if (realadd(midv, itemStack) || (getAmount(player.getInventory()) <= (inv_s.getSize() - getAmount(inv_s)))) {
+            if (realadd(midv, itemStack_test) || (getAmount(player.getInventory()) <= (inv_s.getSize() - getAmount(inv_s)))) {
                 inv_s.addItem(itemStack);
                 SQLActions.uploaddata(player, inv_s);
                 self.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
