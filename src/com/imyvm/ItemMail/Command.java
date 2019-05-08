@@ -32,7 +32,7 @@ public class Command implements CommandExecutor {
     private String null_inv = ItemMail.getMessage_null_inv();
     private String moneyuuid = ItemMail.getMoneyuuid();
     private String message_received = ItemMail.getMessage_received();
-    private PassiveExpiringMap<Player, List> map = new PassiveExpiringMap<>(30000);
+    public PassiveExpiringMap<Player, List> map = new PassiveExpiringMap<>(30000);
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmdObj, String label, String[] args) {
@@ -134,10 +134,12 @@ public class Command implements CommandExecutor {
                 if (list.get(1) instanceof ItemStack) {
                     ItemStack itemStack = (ItemStack) list.get(1);
                     ItemStack itemStack_test = (ItemStack) list.get(3);
+                    map.remove(player);
                     return process(itemStack, itemStack_test, player, receiver, price);
                 } else {
                     ItemStack[] itemStack = (ItemStack[]) list.get(1);
                     ItemStack[] itemStack_test = (ItemStack[]) list.get(3);
+                    map.remove(player);
                     return process(itemStack, itemStack_test, player, receiver, price);
                 }
 
@@ -316,12 +318,12 @@ public class Command implements CommandExecutor {
 
             // Price
             int amount_Box = getrealamount(itemStack);
-            ItemStack midit = new ItemStack(itemStack);
             double tprice = getTotalPrice(itemStack.getAmount() + amount_Box);
 
-            Inventory mid_inv = Bukkit.createInventory(null, 9, "mid_inv");
-            mid_inv.setItem(0, self.getInventory().getItemInMainHand());
-            ItemStack itemStack_test = mid_inv.getItem(0);
+//            Inventory mid_inv = Bukkit.createInventory(null, 9, "mid_inv");
+//            mid_inv.setItem(0, self.getInventory().getItemInMainHand());
+//            ItemStack itemStack_test = mid_inv.getItem(0);
+            ItemStack itemStack_test = new ItemStack(itemStack);
 
             List<Object> list = new ArrayList<>();
             list.add(player);
@@ -375,6 +377,10 @@ public class Command implements CommandExecutor {
     private boolean process(ItemStack[] itemStack, ItemStack[] itemStacks_test, Player self, Player player, Double price) {
 
         DecimalFormat df = new DecimalFormat("0.00 ");
+        if (!(Arrays.deepEquals(self.getInventory().getStorageContents(), itemStacks_test))) {
+            self.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4非法操作！"));
+            return false;
+        }
 
         // Remote Inventory: midv
         Inventory inv_s = SQLActions.loaddata(player);
@@ -416,6 +422,10 @@ public class Command implements CommandExecutor {
     private boolean process(ItemStack itemStack, ItemStack itemStack_test, Player self, Player player, Double price) {
 
         DecimalFormat df = new DecimalFormat("0.00 ");
+        if (!self.getInventory().getItemInMainHand().equals(itemStack_test)) {
+            self.sendMessage(ChatColor.translateAlternateColorCodes('&', "&4非法操作！"));
+            return false;
+        }
 
         // Remote Inventory: midv
         Inventory inv_s = SQLActions.loaddata(player);
